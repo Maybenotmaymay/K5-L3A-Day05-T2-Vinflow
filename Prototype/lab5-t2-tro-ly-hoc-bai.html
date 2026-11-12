@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LAB5 T2 – Trợ lý học bài tối muộn (prototype)</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7f9;--sf:#fff;--tx:#1b1f24;--mu:#5b6573;--bd:#d9dee5;--pr:#1f5fbf;--prt:#fff;--ok:#146c43;--okb:#e3f4ea;--wn:#8a5a00;--wnb:#fff3d6;--no:#a12622;--nob:#fde7e6;--bot:#eef2f8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--sf:#1d2228;--tx:#e8ebef;--mu:#9aa5b3;--bd:#343c46;--pr:#6ea3ff;--prt:#0d1520;--ok:#7fd8a6;--okb:#173326;--wn:#f0c36a;--wnb:#3a2f14;--no:#ff9b95;--nob:#3b1b1a;--bot:#232a33}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{max-width:860px;margin:0 auto;display:flex;flex-direction:column;height:100%}
+header{padding:10px 14px;background:var(--sf);border-bottom:1px solid var(--bd)}
+h1{font-size:16px;margin:0}.sub{color:var(--mu);font-size:13px}
+.tabs{display:flex;gap:6px;margin-top:8px}
+.tab{flex:1;padding:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:8px;cursor:pointer;font:inherit}
+.tab[aria-selected=true]{background:var(--pr);color:var(--prt);border-color:var(--pr)}
+.sim{background:var(--wnb);color:var(--wn);font-size:12.5px;padding:6px 14px;border-bottom:1px solid var(--bd)}
+.banner{margin:10px 14px 0;padding:9px 12px;background:var(--wnb);color:var(--wn);border-radius:8px;font-size:13.5px}
+.caps{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 14px 0;font-size:12.5px}
+.caps div{padding:6px 9px;border-radius:8px}.caps .y{background:var(--okb);color:var(--ok)}.caps .n{background:var(--nob);color:var(--no)}
+.timebar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 14px 0;font-size:13px}
+.timebar button{font:inherit;font-size:12.5px;padding:3px 9px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:99px;cursor:pointer}
+.pill{padding:2px 9px;border-radius:99px;font-weight:600}.pill.on{background:var(--okb);color:var(--ok)}.pill.off{background:var(--nob);color:var(--no)}
+#chat{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:88%;padding:9px 12px;border-radius:12px;border:1px solid var(--bd);background:var(--bot)}
+.m.u{align-self:flex-end;background:var(--pr);color:var(--prt);border-color:var(--pr)}
+.m p{margin:0 0 6px}.m p:last-child{margin:0}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:99px;margin:2px 4px 2px 0}
+.tag.ok{background:var(--okb);color:var(--ok)}.tag.wn{background:var(--wnb);color:var(--wn)}.tag.no{background:var(--nob);color:var(--no)}
+.src{margin-top:6px;padding:7px 10px;border-left:3px solid var(--pr);background:var(--sf);border-radius:6px;font-size:13px}
+.src b{color:var(--pr)}.src q{display:block;color:var(--mu);margin-top:2px}
+.act{margin-top:7px;display:flex;flex-wrap:wrap;gap:6px}
+button.b{font:inherit;font-size:13.5px;padding:7px 11px;border:1px solid var(--pr);background:var(--sf);color:var(--pr);border-radius:8px;cursor:pointer}
+button.b.p{background:var(--pr);color:var(--prt)}
+.ctrl{padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));background:var(--sf);border-top:1px solid var(--bd)}
+.scen{display:flex;flex-direction:column;gap:5px;margin-bottom:8px}
+.scen button{text-align:left;font:inherit;font-size:13.5px;padding:7px 10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);border-radius:8px;cursor:pointer}
+.row{display:flex;gap:6px}.row input{flex:1;font:inherit;padding:8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);min-width:0}
+.view{display:none;flex:1;min-height:0;flex-direction:column}.view.on{display:flex}
+#ta{overflow-y:auto;padding:12px 14px}
+.card{border:1px solid var(--bd);background:var(--sf);border-radius:10px;padding:10px 12px;margin-bottom:10px}
+.card h3{margin:0 0 4px;font-size:14.5px}.meta{font-size:12.5px;color:var(--mu)}
+.empty{color:var(--mu);text-align:center;padding:30px 10px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.on{display:flex}.box{background:var(--sf);border-radius:12px;padding:16px;max-width:460px;width:100%}
+.box h2{margin:0 0 8px;font-size:16px}.q{padding:8px 10px;background:var(--bg);border-radius:8px;margin:6px 0;font-size:14px}
+</style></head>
+<body><div class="app">
+<header>
+  <h1>Trợ lý học bài tối muộn · Nhập môn phân tích dữ liệu · Buổi 3</h1>
+  <div class="sub">Prototype LAB5 – T2 · dữ liệu dựng sẵn, không có backend</div>
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t1" aria-selected="true">Màn hình học viên</button>
+    <button class="tab" role="tab" id="t2" aria-selected="false">Màn hình TA (<span id="cnt">0</span>)</button>
+  </div>
+</header>
+<div class="sim">MÔ PHỎNG: không có TA hay hệ thống thật nào nhận câu hỏi trong bản demo này.</div>
+
+<section class="view on" id="v1">
+  <div class="banner"><b>Bài tập 3 đang mở</b> (hạn 13/11/2026 23:59) — trợ lý chỉ gợi ý, không đưa hoặc xác nhận đáp số.</div>
+  <div class="caps">
+    <div class="y"><b>Làm được (G1):</b> tra cứu §3.1–§3.5, gợi ý bước đầu, chuyển câu hỏi cho TA khi bạn xác nhận.</div>
+    <div class="n"><b>Không làm:</b> giải hoặc xác nhận đáp số, sửa tài liệu, tự đăng FAQ, giảng Buổi 7 (chưa mở).</div>
+  </div>
+  <div class="timebar">
+    <span>Giờ mô phỏng:</span><input type="time" id="clk" value="21:30" aria-label="Giờ mô phỏng">
+    <button id="b1">Trong giờ 20:30</button><button id="b2">Ngoài giờ 23:15</button>
+    <span id="st" class="pill"></span><span class="sub">Giờ TA: 08:00–22:00</span>
+  </div>
+  <div id="chat" aria-live="polite">
+    <div class="m"><p>Chào bạn, mình là trợ lý học bài của Buổi 3. Hãy bấm một kịch bản bên dưới hoặc gõ câu hỏi.</p></div>
+  </div>
+  <div class="ctrl">
+    <div class="scen">
+      <button data-s="A">A. “Giải hộ em Bài tập 3.”</button>
+      <button data-s="B">B. “§3.3 nói độ lệch chuẩn luôn nhỏ hơn phương sai. Điều đó có đúng không?”</button>
+      <button data-s="C">C. “Trong slide 12 có nội dung gì?”</button>
+    </div>
+    <div class="row"><input id="inp" placeholder="Gõ câu hỏi…" aria-label="Câu hỏi"><button class="b p" id="send">Gửi</button></div>
+  </div>
+</section>
+
+<section class="view" id="v2">
+  <div class="banner">Màn hình TA (mô phỏng) — hàng chờ chỉ gồm câu hỏi mà học viên đã xác nhận chuyển trong prototype này.</div>
+  <div id="ta" style="margin-top:10px"></div>
+</section>
+</div>
+
+<div class="modal" id="md" role="dialog" aria-modal="true"><div class="box">
+  <h2>Xác nhận gửi câu hỏi cho TA?</h2>
+  <div class="meta">Câu hỏi sẽ được gửi:</div><div class="q" id="mq"></div>
+  <div class="meta">Căn cứ: <span id="mc"></span></div>
+  <p id="mt" style="font-size:13.5px"></p>
+  <div class="act" style="justify-content:flex-end"><button class="b" id="mx">Hủy</button><button class="b p" id="mo">Xác nhận gửi</button></div>
+</div></div>
+
+<script>
+const SEC={"§3.1":"Trung bình cộng","§3.2":"Trung vị","§3.3":"Phương sai và độ lệch chuẩn","§3.4":"Giá trị ngoại lai","§3.5":"Bài tập 3"};
+const $=id=>document.getElementById(id);
+let last=null, queue=[];
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function inHours(){const v=$("clk").value||"21:30";return v>="08:00"&&v<="22:00"}
+function refresh(){const s=$("st");const on=inHours();s.textContent=on?"TA đang trực":"TA hiện không trực";s.className="pill "+(on?"on":"off")}
+function tab(n){["1","2"].forEach(i=>{$("v"+i).classList.toggle("on",i==n);$("t"+i).setAttribute("aria-selected",i==n)});if(n==2)renderTA()}
+$("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);
+$("clk").oninput=refresh;$("b1").onclick=()=>{$("clk").value="20:30";refresh()};$("b2").onclick=()=>{$("clk").value="23:15";refresh()};
+function add(html,u){const d=document.createElement("div");d.className="m"+(u?" u":"");d.innerHTML=html;$("chat").appendChild(d);$("chat").scrollTop=1e9;return d}
+function src(code,text){return `<div class="src"><b>Căn cứ: ${code}</b> · ${SEC[code]} (tài liệu Buổi 3)${text?`<q>${text}</q>`:""}</div>`}
+function taBtn(){return `<div class="act"><button class="b p" data-ta="1">Gửi câu hỏi cho TA</button></div>`}
+function reply(k,q){
+  let h,codes;
+  if(k=="A"){codes=["§3.2"];
+    h=`<p>Bài tập 3 đang mở nên mình không giải hộ, không đưa hay xác nhận đáp số. Mình có thể đưa một gợi ý bước đầu:</p>
+    <p><b>Gợi ý:</b> đọc lại quy tắc trung vị ở §3.2, rồi tự đếm số lượng giá trị trong dãy của đề để xem thuộc trường hợp nào trong quy tắc.</p>`
+    +src("§3.2","Trung vị là giá trị đứng giữa sau khi sắp xếp tăng dần; nếu số lượng giá trị chẵn, trung vị là trung bình cộng của hai giá trị đứng giữa.")
+    +`<span class="tag ok">Tự làm: tra cứu §3.2</span><span class="tag wn">Gợi ý chỉ ở mức bước đầu</span><span class="tag no">Bị cấm: giải / đáp số</span>`+taBtn()}
+  else if(k=="B"){codes=["§3.3"];
+    h=`<p>Câu cần kiểm tra trong §3.3 là câu bên dưới. Nếu phương sai là 0.25 thì căn bậc hai của nó là 0.5, lớn hơn 0.25. Vì vậy phần “luôn nhỏ hơn” đáng nghi.</p>
+    <p>Mình không tự sửa tài liệu và chưa có xác nhận nào từ giảng viên.</p>`
+    +src("§3.3","“Vì là căn bậc hai, độ lệch chuẩn luôn nhỏ hơn phương sai.”")
+    +`<span class="tag wn">Cần TA/giảng viên xác minh</span><span class="tag ok">Tự làm: trích §3.3 và nêu ví dụ</span><span class="tag no">Bị cấm: sửa tài liệu, đăng FAQ</span>`+taBtn()}
+  else if(k=="C"){codes=[];
+    h=`<p>Tài liệu Buổi 3 không đánh số slide, chỉ có các mục §3.1–§3.5, nên mình không có căn cứ để nói “slide 12”. Bạn muốn xem mục nào?</p>
+    <div class="act">${Object.keys(SEC).map(c=>`<button class="b" data-sec="${c}">${c} ${SEC[c]}</button>`).join("")}</div>
+    <span class="tag wn">Chưa có căn cứ cho “slide 12”</span><span class="tag ok">Thu hẹp phạm vi (G10)</span>`+taBtn()}
+  else{codes=[];
+    h=`<p>Mình chưa đủ căn cứ để trả lời câu này một cách chắc chắn. Bạn có thể chọn một mục §3.1–§3.5 hoặc chuyển câu hỏi cho TA.</p>
+    <div class="act">${Object.keys(SEC).map(c=>`<button class="b" data-sec="${c}">${c}</button>`).join("")}</div>
+    <span class="tag wn">Không có căn cứ trong dữ liệu đã cung cấp</span>`+taBtn()}
+  last={q,codes};add(h,false)}
+function pick(k,q){add(esc(q),true);reply(k,q)}
+document.querySelectorAll(".scen button").forEach(b=>b.onclick=()=>pick(b.dataset.s,b.textContent.trim().replace(/^[ABC]\.\s*/,"").replace(/[“”]/g,"")));
+function free(){const v=$("inp").value.trim();if(!v)return;$("inp").value="";const l=v.toLowerCase();
+  pick(/giải|đáp số|bài tập 3/.test(l)?"A":/độ lệch chuẩn|phương sai|3\.3/.test(l)?"B":/slide/.test(l)?"C":"X",v)}
+$("send").onclick=free;$("inp").onkeydown=e=>{if(e.key=="Enter")free()};
+$("chat").onclick=e=>{const t=e.target;
+  if(t.dataset.sec){const c=t.dataset.sec;add(esc(c+" "+SEC[c]),true);
+    last={q:"Mình cần hỏi thêm về mục "+c+" "+SEC[c]+".",codes:[c]};
+    add(`<p>Mục ${c} là “${SEC[c]}”. Bạn muốn hỏi gì trong mục này? Mình chỉ dùng nội dung đã có trong mục đó.</p>`+src(c,"")+taBtn())}
+  if(t.dataset.ta){if(!last)return;$("mq").textContent=last.q;$("mc").textContent=last.codes.length?last.codes.join(", "):"không có mã mục (chưa có căn cứ)";
+    $("mt").textContent=inHours()?"TA đang trong giờ trực (08:00–22:00), nhưng không có cam kết thời gian trả lời.":"TA hiện không trực (giờ trực 08:00–22:00). Câu hỏi chỉ được mô phỏng là chờ xử lý, không hứa sẽ trả lời ngay.";
+    $("md").classList.add("on")}};
+$("mx").onclick=()=>$("md").classList.remove("on");
+$("mo").onclick=()=>{$("md").classList.remove("on");
+  queue.push({q:last.q,codes:last.codes,t:$("clk").value+" (mô phỏng)",st:"wait"});$("cnt").textContent=queue.length;
+  add(`<span class="tag ok">Đã mô phỏng gửi câu hỏi cho TA</span><p>${inHours()?"Câu hỏi đã vào hàng chờ mô phỏng.":"TA hiện không trực (08:00–22:00); câu hỏi nằm trong hàng chờ mô phỏng, chưa có cam kết trả lời."}</p>`)};
+function renderTA(){const el=$("ta");if(!queue.length){el.innerHTML='<div class="empty">Chưa có câu hỏi nào trong hàng chờ mô phỏng.<br>Hãy gửi một câu hỏi từ màn hình học viên.</div>';return}
+  el.innerHTML=queue.map((x,i)=>{const lab={wait:'<span class="tag wn">Chờ TA xem</span>',seen:'<span class="tag ok">Đã xem</span>',flag:'<span class="tag no">Cần giảng viên kiểm tra</span>'}[x.st];
+  return `<div class="card"><h3>${esc(x.q)}</h3><div class="meta">Mã mục: ${x.codes.join(", ")||"không có"} · Gửi: ${x.t}</div><div style="margin:6px 0">${lab}</div>
+  <div class="act"><button class="b" data-i="${i}" data-a="seen">Đã xem</button><button class="b" data-i="${i}" data-a="flag">Đánh dấu cần giảng viên kiểm tra</button></div></div>`}).join("")}
+$("ta").onclick=e=>{const d=e.target.dataset;if(d.a){queue[d.i].st=d.a;renderTA()}};
+refresh();
+</script></body></html>
