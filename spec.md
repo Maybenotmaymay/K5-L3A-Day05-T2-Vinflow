@@ -4,7 +4,7 @@
 >
 > **Một quyết định = bốn ý:** đã cân nhắc phương án nào · chọn phương án nào · vì sao · loại các phương án kia vì sao. Bằng chứng = lập luận trỏ về một chỗ cụ thể: tool nào, dòng dữ liệu nào của track, điều gì trong mục "Sản phẩm thật hôm nay", chỗ nào trên prototype (ảnh đánh số). Không chạy agent.
 
-```markdown
+
 # Bài nộp LAB5 — T2 · Nhóm Vinflow
 [Danh sách thành viên và việc mỗi người làm — copy bảng từ README]
 | Họ và Tên | Mã Học Viên | Việc đã làm |
@@ -79,15 +79,71 @@
   - **PAIR Errors + Graceful Failure (Đường lui an toàn khi gặp lỗi):** Tạo đường chuyển tiếp mượt mà sang TA kèm bản tóm tắt tự động đoạn mâu thuẫn tại `§3.3`, đồng thời thông báo trung thực khung giờ TA phản hồi (`08:00–22:00`) chứ không nói dối là *"đã báo TA trả lời ngay"*[cite: 7].
 
 ## §4. Mức tự chủ  (chặng 4)
-Với mỗi tool:
-- Mức của nhóm (tự làm / cần người duyệt / cấm). Nếu cần người duyệt: ai duyệt · người duyệt thấy gì · quá hạn thì sao.
-- Lý do theo cost-of-error: sai thì ai chịu gì · đảo lại được không · chờ người thì mất gì.
-- Phương án đã cân nhắc và vì sao loại.
-Thêm:
-- Tool khó xếp nhất: mỗi người từng chọn gì, cái giá của mỗi phía (trỏ về kịch bản ở §2), nhóm chốt thế nào.
-- Thử mức đã đặt trên 2 kịch bản đắt nhất + 1 kịch bản bình thường: cái sai có bị chặn không? còn việc nào làm khi lẽ ra phải hỏi? người dùng bình thường có phải chờ vô ích không?
-- Luật thêm hoặc tool tách bước (nếu có), và vì sao.
-- Một mức tự chủ đã đổi lời hứa nào với người dùng.
+
+### Bảng mức của nhóm
+
+| Tool | Mức | Điều kiện / ai duyệt |
+|---|---|---|
+| `tra_cuu_tai_lieu` | **Tự làm** | Chỉ buổi đã mở (1–3). Không có mã mục thì không trả nội dung. |
+| `goi_y_buoc_dau` *(tách từ `goi_y_bai_tap`)* | **Tự làm, giới hạn cứng** | Dùng cho bài đang mở hoặc không xác định được trạng thái. Đầu ra chỉ gồm câu hỏi ngược + trỏ mục §, không có con số kết quả. |
+| `giai_thich_day_du` *(tách từ `goi_y_bai_tap`)* | **Tự làm, có cổng** | Chỉ gọi được khi trang khoá học ghi bài đã hết hạn và có đáp án công bố (bài 2). |
+| `chuyen_TA` | **Tự làm** | Chỉ nói "đã chuyển" khi tool trả về thành công. Giờ TA lấy từ trang khoá học (08:00–22:00). |
+| `soan_nhap_FAQ` *(tách từ `dang_FAQ`)* | **Tự làm** | Chỉ ghi nháp vào hàng chờ của TA, không ai khác thấy. |
+| `dang_FAQ` | **Cần người duyệt (TA)** | Xem mục "Ai duyệt" bên dưới. |
+
+### Lý do theo cost-of-error
+
+- **`tra_cuu_tai_lieu` — tự làm.**
+  - *Ai chịu gì:* tool chỉ đọc nên không đổi gì. Rủi ro còn lại là tài liệu có câu sai (`§3.3`: "độ lệch chuẩn luôn nhỏ hơn phương sai", không đúng khi phương sai < 1).
+  - *Chờ người thì mất gì:* 22:00 học viên kẹt một chữ mà không ai để hỏi; bắt chờ là phá mục đích sản phẩm.
+  - *Cái sai tài liệu* không chặn được ở tool này, nên chặn ở `chuyen_TA` (cờ) và `dang_FAQ` (duyệt).
+- **`goi_y_bai_tap` — tách làm hai.**
+  - *Ai chịu gì:* gợi ý quá tay thì học viên đã chép, không đảo lại được và âm thầm.
+  - *Quyết định:* gợi ý bước đầu rẻ, chờ người thì vô ích → tự làm. Giải thích đầy đủ chỉ an toàn khi bài đã có đáp án công bố → khoá theo trạng thái bài.
+  - Trạng thái bài lấy từ trang khoá học (Dữ liệu B), không lấy từ lời học viên.
+- **`chuyen_TA` — tự làm.**
+  - *Ai chịu gì:* chuyển thừa chỉ tốn công TA và đảo lại được; chuyển thiếu thì học viên học sai mà không ai biết, đắt hơn.
+  - Cái sai thật nằm ở lời hứa: ngoài giờ 22:00 mà nói "TA sẽ trả lời ngay" là hứa điều không đúng.
+- **`dang_FAQ` — cần TA duyệt.**
+  - *Ai chịu gì:* gỡ được nhưng nhiều người đã đọc. Một đáp số bài đang mở hoặc câu sai của `§3.3` lên FAQ là cả lớp học sai hoặc chép.
+  - *Chờ người thì mất gì:* không mất gì, vì học viên đã nhận câu trả lời riêng; FAQ chỉ là phần thêm.
+- **`soan_nhap_FAQ` — tự làm.** Chỉ ghi nháp trong hàng chờ của TA, không ai khác thấy, xoá được.
+
+### Ai duyệt `dang_FAQ`
+
+- **Người duyệt:** TA.
+- **TA thấy:** câu hỏi đã ẩn danh · câu trả lời nháp · mã mục tài liệu được trích · cờ nếu liên quan bài đang mở hoặc mục `§3.3`.
+- **Quá hạn:** nháp tự hết hạn sau 48 giờ, không bao giờ tự đăng. Học viên không mất gì vì đã có câu trả lời riêng.
+
+### Tool khó xếp nhất: `goi_y_bai_tap`
+
+| Phương án | Ai chọn *(sửa lại theo nhóm)* | Cái giá |
+|---|---|---|
+| Tự làm hết | A: "22:00 không ai hỏi được" | Kịch bản #? "xin giải hộ bài 3": AI lỡ tay đưa đáp số, học viên đã chép. |
+| Cần TA duyệt mọi gợi ý | B: "chép là không đảo được" | Gợi ý bước đầu cũng phải chờ TA tới 08:00, học viên bỏ. |
+| Cấm cho bài mở | C: "an toàn nhất" | Mất đúng lúc học viên cần, sản phẩm vô dụng ban đêm. |
+
+- **Chốt:** tách theo trạng thái bài. Khi không xác định được trạng thái thì mặc định là "đang mở".
+- Với bài mở, mỗi bước chờ học viên thử rồi mới gợi ý bước kế, để không ghép được thành lời giải.
+
+### Thử mức đã đặt
+
+| Kịch bản | Cái sai có bị chặn? | Làm khi lẽ ra phải hỏi? | Người dùng bình thường phải chờ? |
+|---|---|---|---|
+| **Đắt 1** (#?): xin xác nhận đáp số bài 3 đang mở | Có: cả hai tool giải bài đều không xác nhận được. AI hỏi ngược "bạn tính tổng thế nào?" và gợi ý kiểm lại từng bước. | Không. | Không, vẫn được gợi ý ngay. |
+| **Đắt 2** (#7 & #8): tài liệu `§3.3` sai, học viên đòi đăng FAQ | Có: `dang_FAQ` cần TA duyệt, nháp mang cờ `§3.3`. | Không: AI nói câu này cần xem lại kèm lý do, rồi chuyển TA. | Không, học viên vẫn nhận giải thích riêng. |
+| **Bình thường:** "Trung vị khác trung bình cộng chỗ nào?" | Không có gì cần chặn. | Không. | Không: `tra_cuu_tai_lieu` tự làm, trích `§3.1` và `§3.2`. |
+
+### Luật thêm
+
+1. Tool giải bài chỉ gọi được theo trạng thái bài lấy từ trang khoá học.
+2. `chuyen_TA` có cờ "tài liệu có thể sai". AI không có tool báo giảng viên, nên chỉ nói "bạn hãy báo giảng viên", không nói "mình đã báo".
+3. Câu AI nói về hạn nộp và giờ TA chỉ lấy từ Dữ liệu B.
+
+### Lời hứa với người dùng
+
+- **Học viên:** từ "AI giải bài cho bạn" thành "AI hỏi từng bước, chỉ đưa đáp án khi bài đã hết hạn".
+- **Cả lớp:** AI không đăng gì lên FAQ khi chưa có TA duyệt, nên học viên có thể tin FAQ đã có người kiểm.
 
 ## §5. Prototype  (chặng 5)
 - Link hoặc file · công cụ · phần nào mock · có lời gọi AI thật không.
