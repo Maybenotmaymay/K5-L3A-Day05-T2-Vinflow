@@ -8,9 +8,9 @@
 [Danh sách thành viên và việc mỗi người làm — copy bảng từ README]
 | Họ và Tên | Mã Học Viên | Việc đã làm |
 |---|---|---|
-| Lê Quang Linh | 2A202603583 |  |
-| Nguyễn Thanh Tùng | 2A202603594 |  |
-| Nguyễn Minh Khôi | 2A202603528 |  |
+| Lê Quang Linh | 2A202603583 | Lát cắt & phạm vi, Kịch bản rủi ro, Khi AI sai |
+| Nguyễn Thanh Tùng | 2A202603594 | Mức tự chủ, Lý do theo cost-of-error |
+| Nguyễn Minh Khôi | 2A202603528 | Prototype, thiết kế UI, quyết định |
 ## §1. Lát cắt & phạm vi
 - **Lát cắt:** Trong **trợ lý học bài của trang khoá học (kiểu ChatGPT Study mode)**, khi **học viên** đang hỏi bài lúc tối muộn, khi không còn ai để hỏi, **AI giảng kèm trích tài liệu, hỏi lại cho rõ, gợi ý từng bước, hay nói thẳng "tài liệu không có, hỏi giảng viên"**, để học viên hiểu đúng bài mình đang học, không chép đáp án, không học sai mà không biết.
 - **3 việc tính năng KHÔNG làm:**
